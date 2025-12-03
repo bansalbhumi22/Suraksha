@@ -94,6 +94,12 @@ const SlotAvailability = () => {
                         : 'Waitlist'}
                 </span>
               </div>
+              
+               <p className="text-sm text-brand-dusk/60">
+    {slot.totalSeats - slot.bookedSeats}/{slot.totalSeats} seats available
+  </p>
+
+
               <div className="h-2 rounded-full bg-brand-dusk/10">
                 <div
                   className={`h-2 rounded-full transition ${

@@ -149,24 +149,78 @@ export const locationFilters = temples.reduce((acc, temple) => {
 }, {})
 
 export const slotTemplates = [
-  { label: '05:00 - 06:00 AM', status: 'few' },
-  { label: '06:00 - 07:00 AM', status: 'available' },
-  { label: '07:00 - 08:00 AM', status: 'available' },
-  { label: '08:00 - 09:00 AM', status: 'filling' },
-  { label: '09:00 - 10:00 AM', status: 'waitlist' },
-  { label: '10:00 - 11:00 AM', status: 'available' },
-  { label: '11:00 - 12:00 AM', status: 'few' },
-  { label: '12:00 - 01:00 PM', status: 'available' },
-  { label: '01:00 - 02:00 PM', status: 'available' },
-  { label: '02:00 - 03:00 PM', status: 'filling' },
-  { label: '03:00 - 04:00 PM', status: 'waitlist' },
-  { label: '04:00 - 05:00 PM', status: 'available' },
-  { label: '05:00 - 06:00 PM', status: 'available' },
-  { label: '06:00 - 07:00 PM', status: 'filling' },
-  { label: '07:00 - 08:00 PM', status: 'waitlist' },
-  { label: '08:00 - 09:00 PM', status: 'available' },
-  { label: '09:00 - 10:00 PM', status: 'waitlist' },
-  { label: '10:00 - 11:00 PM', status: 'available' },
+  { label: '05:00 - 06:00 AM', 
+    status: 'few',
+    totalSeats: 500,
+     bookedSeats:450 },
+  { label: '06:00 - 07:00 AM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:100
+   },
+  { label: '07:00 - 08:00 AM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:150
+   },
+  { label: '08:00 - 09:00 AM', status: 'filling',
+    totalSeats: 500,
+     bookedSeats:350
+   },
+  { label: '09:00 - 10:00 AM', status: 'waitlist',
+    totalSeats: 500,
+     bookedSeats:500
+   },
+  { label: '10:00 - 11:00 AM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:200
+   },
+  { label: '11:00 - 12:00 AM', status: 'few',
+    totalSeats: 500,
+     bookedSeats:480
+   },
+  { label: '12:00 - 01:00 PM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:30
+   },
+  { label: '01:00 - 02:00 PM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:80
+   },
+  { label: '02:00 - 03:00 PM', status: 'filling' ,
+    totalSeats: 500,
+     bookedSeats:90
+  },
+  { label: '03:00 - 04:00 PM', status: 'waitlist',
+    totalSeats: 500,
+     bookedSeats:500
+   },
+  { label: '04:00 - 05:00 PM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:50
+   },
+  { label: '05:00 - 06:00 PM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:150
+  },
+  { label: '06:00 - 07:00 PM', status: 'filling',
+    totalSeats: 500,
+     bookedSeats:400
+   },
+  { label: '07:00 - 08:00 PM', status: 'waitlist',
+    totalSeats: 500,
+     bookedSeats:500
+   },
+  { label: '08:00 - 09:00 PM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:200
+   },
+  { label: '09:00 - 10:00 PM', status: 'waitlist',
+    totalSeats: 500,
+     bookedSeats:500
+   },
+  { label: '10:00 - 11:00 PM', status: 'available',
+    totalSeats: 500,
+     bookedSeats:10
+   },
 ]
 
 export const parkingZones = [
@@ -195,4 +249,6 @@ export const parkingZones = [
     amenities: ['Covered', 'Wheelchair', 'Priority exit'],
   },
 ]
+
+
 
