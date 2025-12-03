@@ -2,20 +2,22 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from '../context/BookingContext'
 import useTranslation from '../hooks/useTranslation'
+import axios from "axios"
 
 const VisitorDetails = () => {
   const navigate = useNavigate()
   const { booking, updateBooking } = useBooking()
   const t = useTranslation()
 
-  const [name, setName] = useState(booking.visitors.name || '')
-  const [phone, setPhone] = useState(booking.visitors.phone || '')
-  const [total, setTotal] = useState(booking.visitors.total || 1)
-  const [elders, setElders] = useState(booking.visitors.elders || 0)
+  const [username, setName] = useState(booking.name || '')
+  const [phone, setPhone] = useState(booking.phone || '')
+  const [visitors, setVisitors] = useState(booking.total || 1)
+  const [elders, setElders] = useState(booking.elders || 0)
   const [differentlyAbled, setDifferentlyAbled] = useState(
-    booking.visitors.differentlyAbled || 0
+    booking.differentlyAbled || 0
   )
-  //const [notes, setNotes] = useState(booking.visitors.notes || '')
+  //const [notes, setNotes] = useState(booking.visitors.notes || '') 
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (!booking.temple) {
@@ -23,35 +25,101 @@ const VisitorDetails = () => {
     }
   }, [booking.temple, navigate])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    updateBooking({
-      visitors: {
-        name,
+    setErrorMsg("");
+
+
+    const visitorsNum = Number(visitors) || 0
+    const eldersNum = Number(elders) || 0
+    const diffNum = Number(differentlyAbled) || 0
+    
+     if (!username.trim()) {
+      setErrorMsg('Please enter pilgrim name')
+      return
+    }
+    
+    if (!Number.isInteger(visitorsNum) || visitorsNum < 1) {
+      setErrorMsg('Total visitors must be at least 1')
+      return
+    }
+    if (eldersNum < 0 || diffNum < 0) {
+      setErrorMsg('Elders and Differently abled cannot be negative')
+      return
+    }
+
+    // NEW: enforce sum < 20
+    const totalSum = visitorsNum + eldersNum + diffNum
+    if (!(totalSum <= 20)) {
+      setErrorMsg('Total abled must be less than 20')
+      return
+    }
+
+    const bookingInfo={
+       
+        username,
         phone,
-        total,
+        visitors,
         elders,
         differentlyAbled,
-        //notes,
-      },
-      currentBooking: {
+      
         id: `BK-${Math.floor(Math.random() * 10000)}`,
         temple: booking.temple.name,
         city: booking.temple.city,
         date: booking.visitDate,
         slot: booking.visitSlot, 
-        // || booking.parkingTime,
-        // parking: booking.parkingZone || 'Not selected',
-        visitors: {
-          name,
-          phone,
-          total,
-          elders,
-          differentlyAbled,
-        },
-      },
-    })
+      
+    }
+    console.log(bookingInfo)
+    try {
+      const res=await axios.post("http://localhost:8000/api/v1/bookings/booking",bookingInfo,
+        {headers :{'content-Type':'application/json'}}
+      );
+
+    if (res && (res.status === 200 || res.status === 201)) {
+      
+      console.log('Booking Successfull:', res.data);
+     
+    } else {
+      console.warn('Booking API responded with unexpected status:', res?.status, res?.data);
+    }
+    } catch (error) {
+      
+      console.error('Signup API error:',err);
+      setErrorMsg("Something went wrong while Booking! ");
+return;
+    }
+    updateBooking({
+      
+        name: username,
+    phone,
+    total: visitors,
+    elders,
+    differentlyAbled,
+        //notes,
+      })
+    //   currentBooking: {
+    //     id: `BK-${Math.floor(Math.random() * 10000)}`,
+    //     temple: booking.temple.name,
+    //     city: booking.temple.city,
+    //     date: booking.visitDate,
+    //     slot: booking.visitSlot, 
+    //     // || booking.parkingTime,
+    //     // parking: booking.parkingZone || 'Not selected',
+    //     visitors: {
+    //       username,
+    //       phone,
+    //       total,
+    //       elders,
+    //       differentlyAbled,
+    //     },
+    //   },
+    // })
+    
+
+
     navigate('/confirmation')
+
   }
 
   if (!booking.temple) return null
@@ -74,10 +142,10 @@ const VisitorDetails = () => {
 
           <div className="grid gap-4 md:grid-cols-2">
             <label className="flex flex-col text-sm font-medium text-brand-dusk/70">
-              Main pilgrim name *
+              Visitors name *
               <input
                 type="text"
-                value={name}
+                value={username}
                 onChange={(e) => setName(e.target.value)}
                 required
                 className="mt-2 rounded-2xl border border-brand-dusk/15 bg-white/80 px-4 py-3 focus:border-brand-saffron focus:outline-none"
@@ -99,12 +167,13 @@ const VisitorDetails = () => {
 
           <div className="mt-4 grid gap-4 md:grid-cols-3">
             <label className="flex flex-col text-sm font-medium text-brand-dusk/70">
-              Total visitors *
+              visitors *
               <input
                 type="number"
-                value={total}
-                onChange={(e) => setTotal(parseInt(e.target.value) || 1)}
+                value={visitors}
+                onChange={(e) => setVisitors(parseInt(e.target.value) || 1)}
                 min="1"
+                
                 required
                 className="mt-2 rounded-2xl border border-brand-dusk/15 bg-white/80 px-4 py-3 focus:border-brand-saffron focus:outline-none"
               />
@@ -117,6 +186,7 @@ const VisitorDetails = () => {
                 value={elders}
                 onChange={(e) => setElders(parseInt(e.target.value) || 0)}
                 min="0"
+                
                 className="mt-2 rounded-2xl border border-brand-dusk/15 bg-white/80 px-4 py-3 focus:border-brand-saffron focus:outline-none"
               />
             </label>
@@ -128,6 +198,7 @@ const VisitorDetails = () => {
                 value={differentlyAbled}
                 onChange={(e) => setDifferentlyAbled(parseInt(e.target.value) || 0)}
                 min="0"
+                
                 className="mt-2 rounded-2xl border border-brand-dusk/15 bg-white/80 px-4 py-3 focus:border-brand-saffron focus:outline-none"
               />
             </label>
@@ -165,7 +236,7 @@ const VisitorDetails = () => {
               </p>
             )} */}
             <p>
-              <strong>Visitors:</strong> {total} 
+              <strong>Visitors:</strong> {visitors} 
               {/* (Elders: {elders}, Differently abled:{' '}
               {differentlyAbled}) */}
             </p>
@@ -178,9 +249,16 @@ const VisitorDetails = () => {
         >
           {t('details.submit')}
         </button>
+        {errorMsg && (
+          <p className='text-sm-text-red-500 font-meadium'>{errorMsg}</p>
+        )}
+
       </form>
     </div>
   )
 }
 
 export default VisitorDetails
+
+
+

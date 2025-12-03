@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import QRCode from 'react-qr-code'
 import { useNavigate } from 'react-router-dom'
-import { useBooking } from '../context/BookingContext'
+import { useBooking } from '../context/BookingContext.jsx'
 
 const Confirmation = () => {
   const navigate = useNavigate()
@@ -18,8 +18,8 @@ const Confirmation = () => {
       JSON.stringify({
         temple: booking.temple?.name,
         date: booking.visitDate,
-        slot: booking.visitSlot || booking.parkingTime,
-        visitors: booking.visitors.total,
+        slot: booking.visitSlot,
+        visitors: booking.total,
         issuedAt: new Date().toISOString(),
       }),
     [booking],
@@ -97,11 +97,11 @@ const Confirmation = () => {
                 Visitors
               </p>
               <ul className="mt-2 text-sm text-brand-dusk/70">
-                <li>Main pilgrim: {booking.visitors.name || '—'}</li>
-                <li>Contact: {booking.visitors.phone || '—'}</li>
-                <li>Total: {booking.visitors.total}</li>
-                <li>Elders: {booking.visitors.elders}</li>
-                <li>Differently abled: {booking.visitors.differentlyAbled}</li>
+                <li>Main pilgrim: {booking.name || '—'}</li>
+                <li>Contact: {booking.phone || '—'}</li>
+                <li>Visitors: {booking.total}</li>
+                <li>Elders: {booking.elders}</li>
+                <li>Differently abled: {booking.differentlyAbled}</li>
               </ul>
             </article>
             {booking.parkingZone && (

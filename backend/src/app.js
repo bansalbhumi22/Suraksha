@@ -18,6 +18,8 @@ app.use(express.static("public"))//static is use if i want to store any file or 
 app.use(cookieParser())
 import userRouter from "./routes/user.routes.js"
 app.use("/api/v1/users",userRouter)
+import bookingRouter from "./routes/booking.routes.js"
+app.use("/api/v1/bookings",bookingRouter)
 
 
 // app.post('/api/v1/users/register', (req, res) => {

@@ -1,29 +1,51 @@
 import mongoose, {Schema} from 'mongoose'
 import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2'
 const bookingSchema=new Schema ({
-            visitDate:{
-                type:string,
+            date:{
+                type:String,
                 required:true
                
             },
-            name:{
+            username:{
                 type:String,
                 required:true
 
             },
-              visitSlot:{
-                type:string,
+              slot:{
+                type:String,
                 required:true
             
             },
-            total:{
+            phone:{
                 type:Number,
                 required:true
+            },
+            visitors:{
+                type:Number,
+                required:true,
+                default:1
                 
             },
-            temple:{
-                type:string,
+            city:{
+                type:String,
                 required:true
+            },
+            elders:{
+                type:Number,
+                default:0
+            },
+            differentlyAbled:{
+                type:Number,
+                default:0
+            },
+            temple:{
+                type:String,
+                required:true
+            },
+            id:{
+                type:String,
+                required:true,
+                unique:true
             }
 
             

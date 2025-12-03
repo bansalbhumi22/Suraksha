@@ -5,6 +5,7 @@ import {User} from "../models/user.models.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from "bcrypt"
+import {Booking} from "../models/booking.models.js"
 
 
 const generateAccessAndRefereshTokens = async(userId) =>{
@@ -275,9 +276,32 @@ const refreshAccessToken= AsyncHandler(async(req,res)=>{
    }
 })
 
+const registerBooking=AsyncHandler(async(req,res)=>{
+        const{date,username,slot,city,temple,differentlyAbled,elders,visitors,phone,id }=req.body
+
+        if(!username || !temple || !slot || !date || !phone ||!city||!id||!visitors){
+            throw new ApiError(400,"all fields are required")
+        }
+        const booking=await Booking.create({
+            date,username,slot,city,temple,differentlyAbled,elders,visitors,phone,id
+        })
+
+
+        const createdBooking=await Booking.findOne({id:booking.id}).select(
+            "-date -username -slot -city -temple -differentlyAbled -elders -visitors -phone"
+        )
+        if(!createdBooking){
+            throw new ApiError(500,"something went erong while booking")
+        }
+        return res.status(201).json(
+            new ApiResponse(200,createdBooking,"Booking completed successsfully")
+        )
+})
+
 
 export {registerUser}
 export {loginUser}
 export {logoutUser}
 export {refreshAccessToken}
 export {resetPassword}
+export {registerBooking}
