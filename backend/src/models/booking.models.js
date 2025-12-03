@@ -47,11 +47,11 @@ const bookingSchema=new Schema ({
                 required:true,
                 unique:true
             },
-            id_phoneno: {
-                type: Number,
+            bookedBy: {
+                type: Schema.Types.ObjectId,
+                ref: "User",
                 required: true
             }
-
 
             
 }

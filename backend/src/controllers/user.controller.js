@@ -277,24 +277,25 @@ const refreshAccessToken= AsyncHandler(async(req,res)=>{
 })
 
 const registerBooking=AsyncHandler(async(req,res)=>{
-    const id_phoneno = req.user?.phoneno || req.query.phoneno;
-    console.log(id_phoneno)
-    if (!id_phoneno) {
-        throw new ApiError(400, "Phone number is required");
-    }
-        const{date,username,slot,city,temple,differentlyAbled,elders,visitors,phone,id, }=req.body
+        const{date,username,slot,city,temple,differentlyAbled,elders,visitors,phone,id }=req.body
 
         if(!username || !temple || !slot || !date || !phone ||!city||!id||!visitors){
             throw new ApiError(400,"all fields are required")
         }
+
+         if (!req.user?._id) {
+        throw new ApiError(401, "User must be logged in to make a booking");
+        }
+
+
+
         const booking=await Booking.create({
-            date,username,slot,city,temple,differentlyAbled,elders,visitors,phone,id,id_phoneno
+            date,username,slot,city,temple,differentlyAbled,elders,visitors,phone,id,bookedBy: req.user._id
         })
 
-        console.log(booking);
 
         const createdBooking=await Booking.findOne({id:booking.id}).select(
-            "-date -username -slot -city -temple -differentlyAbled -elders -visitors -phone -id_phoneno"
+            "-date -username -slot -city -temple -differentlyAbled -elders -visitors -phone"
         )
         if(!createdBooking){
             throw new ApiError(500,"something went erong while booking")
@@ -304,53 +305,28 @@ const registerBooking=AsyncHandler(async(req,res)=>{
         )
 })
 
-
 const getBookingHistory = AsyncHandler(async (req, res) => {
-    // Get phone number from authenticated user or query params
-    
-   const bookings= await Booking.find({id_phoneno: id_phoneno})
+    // Get the logged-in user's ID
+    if (!req.user?._id) {
+        throw new ApiError(401, "User must be logged in");
+    }
 
-   if(!bookings || bookings.length==0){
-    throw new ApiError(401,"Bookings not found");
-   }
+    // Fetch all bookings created by this user
+    const bookings = await Booking.find({ bookedBy: req.user._id })
+        .sort({ createdAt: -1 })  // Newest first
+        .select('-__v');
 
-   return res.status(200).json(
-     new ApiResponse(
-            200,
-            {
-                totalBookings: bookings.length,
-                bookings: bookings
-            },
-            "Booking history fetched successfully"
-        )
-   )
+    if (!bookings || bookings.length === 0) {
+        return res.status(200).json(
+            new ApiResponse(200, [], "No booking history found")
+        );
+    }
 
-   
-    // Fetch all bookings for this phone number, sorted by date (newest first)
-    // const bookings = await Booking.find({ phone: phoneno })
-    //     .sort({ createdAt: -1 })
-    //     .select('-__v');
-
-    // if (!bookings || bookings.length === 0) {
-    //     return res.status(200).json(
-    //         new ApiResponse(200, [], "No booking history found")
-    //     );
-    // }
-
-    // return res.status(200).json(
-    //     new ApiResponse(
-    //         200,
-    //         {
-    //             totalBookings: bookings.length,
-    //             bookings: bookings
-    //         },
-    //         "Booking history fetched successfully"
-    //     )
-    // );
+    return res.status(200).json(
+        new ApiResponse(200, bookings, "Booking history fetched successfully")
+    );
 });
 
-// Add this to your exports at the bottom of user.controller.js
-export { getBookingHistory };
 
 export {registerUser}
 export {loginUser}
@@ -358,3 +334,4 @@ export {logoutUser}
 export {refreshAccessToken}
 export {resetPassword}
 export {registerBooking}
+export {getBookingHistory}
