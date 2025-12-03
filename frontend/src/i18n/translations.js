@@ -65,7 +65,7 @@ export const translations = {
     'slots.inclusiveCopy':
       'We automatically hold 15% capacity for elders, differently abled devotees, and medical emergencies.',
     'details.heading': 'Visitor verification',
-    'details.title': 'One profile for ticket + parking',
+    'details.title': 'One profile for ticket ',
     'details.subtitle':
       'Returning devotees can verify via OTP. First timers can share group composition for priority cushions.',
     'details.loginStep': 'Login via OTP',
@@ -165,7 +165,7 @@ export const translations = {
     'slots.inclusiveCopy':
       'हम बुजुर्ग, दिव्यांग और आपातकालीन मामलों के लिए 15% क्षमता सुरक्षित रखते हैं।',
     'details.heading': 'भक्त सत्यापन',
-    'details.title': 'एक प्रोफ़ाइल से टिकट + पार्किंग',
+    'details.title': 'एक प्रोफ़ाइल से टिकट',
     'details.subtitle':
       'पुराने भक्त OTP से सत्यापित कर सकते हैं, नए भक्त समूह विवरण साझा करें।',
     'details.loginStep': 'OTP लॉगिन',
@@ -264,7 +264,7 @@ export const translations = {
     'slots.inclusiveCopy':
       'மூத்தோர் மற்றும் மாற்றுத்திறனாளிகளுக்காக 15% கொள்ளளவை பாதுகாத்துள்ளோம்.',
     'details.heading': 'பக்தர் சரிபார்ப்பு',
-    'details.title': 'ஒரே விண்ணப்பத்தில் டிக்கெட் + நிறுத்துமிடம்',
+    'details.title': 'ஒரே விண்ணப்பத்தில் டிக்கெட் ',
     'details.subtitle':
       'முந்தைய பக்தர்கள் OTP மூலம் உள்நுழையலாம்; புதியவர்கள் குழு விவரங்களை பகிரலாம்.',
     'details.loginStep': 'OTP மூலம் உள் நுழை',
@@ -363,7 +363,7 @@ export const translations = {
     'slots.inclusiveCopy':
       'మేము వృద్ధులు, భిన్న సామర్థ్యాలు మరియు అత్యవసరుల కోసం 15% సామర్థ్యాన్ని ఉంచుతాం.',
     'details.heading': 'భక్త ధృవీకరణ',
-    'details.title': 'ఒకే ప్రొఫైల్‌లో టికెట్ + పార్కింగ్',
+    'details.title': 'ఒకే ప్రొఫైల్‌లో టికెట్ ',
     'details.subtitle':
       'పాత భక్తులు OTP ద్వారా, కొత్త వారు బృంద వివరాలను పంచుకుంటారు.',
     'details.loginStep': 'OTP ప్రవేశం',
