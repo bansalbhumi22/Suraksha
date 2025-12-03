@@ -46,7 +46,12 @@ const bookingSchema=new Schema ({
                 type:String,
                 required:true,
                 unique:true
+            },
+            id_phoneno: {
+                type: Number,
+                required: true
             }
+
 
             
 }

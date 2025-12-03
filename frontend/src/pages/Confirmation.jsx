@@ -132,7 +132,8 @@ const Confirmation = () => {
           >
             Plan another temple
           </button>
-          <button className="rounded-full bg-brand-saffron px-5 py-2 text-sm font-semibold text-white">
+          <button className="rounded-full bg-brand-saffron px-5 py-2 text-sm font-semibold text-white" 
+          onClick={() => window.open("https://web.whatsapp.com/", "_blank")}>
             Share on WhatsApp
           </button>
         </div>
