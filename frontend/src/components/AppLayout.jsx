@@ -148,14 +148,42 @@ const AppLayout = ({ children }) => {
       console.log("Previous bookings:", previousBookingsData);
 
 
-       updateBooking({
-        currentBooking: currentBookingData,
-        pastBookings: Array.isArray(previousBookingsData) ? previousBookingsData : [],
-      });
+       
       //   setCurrentBooking(currentBookingData);
       // setPreviousBookings(previousBookingsData);
 
-      
+       const transformedPreviousBookings = Array.isArray(previousBookingsData) 
+        ? previousBookingsData.map(booking => ({
+            id: booking._id || booking.id,
+            temple: booking.templeName || booking.temple || 'Unknown Temple',
+          //  city: booking.city || '',
+            date: booking.visitDate || booking.date || '',
+            slot: booking.visitSlot || booking.slot || '',
+         //   parking: booking.parking || 'Not specified',
+            status: booking.status || 'Completed',
+            visitors: {
+             // name: booking.devoteName || booking.visitors?.name || '',
+            //  phone: booking.phone || booking.visitors?.phone || '',
+            //  email: booking.email || booking.visitors?.email || '',
+              total: booking.devotes || booking.visitors?.total || 1,
+              elders: booking.elders || booking.visitors?.elders || 0,
+              differentlyAbled: booking.differentlyAbled || booking.visitors?.differentlyAbled || 0,
+            }
+          }))
+        : [];
+
+
+         updateBooking({
+        currentBooking: currentBookingData,
+        // pastBookings: Array.isArray(previousBookingsData) ? previousBookingsData : [],
+        pastBookings: transformedPreviousBookings,
+      });
+        
+
+
+       setCurrentBooking(currentBookingData);
+      setPreviousBookings(transformedPreviousBookings);
+
       }catch(err){
         console.log("Fetch error: ",err);
        console.error("Error fetching bookings:", err.response?.data || err.message);
@@ -174,7 +202,7 @@ const AppLayout = ({ children }) => {
 
   
 
-  const templesVisited = booking.pastBookings.filter(b => b.status === 'Completed').length
+  const templesVisited = booking.pastBookings.length
 
   const activeHistory = selectedHistory ?? booking.pastBookings[0]
 
@@ -219,7 +247,7 @@ const AppLayout = ({ children }) => {
                     location.pathname === '/temple-map' ? 'text-brand-saffron' : ''
                   }`}
                 >
-                  <span>🗺️</span>
+                  <span>🗺</span>
                   Temple Map
                 </Link>
               )}
@@ -437,7 +465,7 @@ const AppLayout = ({ children }) => {
                 <p className="text-xs uppercase tracking-wide text-brand-slate/70">
                   {t('nav.previousSlots', 'Previous slots')}
                 </p>
-                <div className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
+                {/* <div className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
                   {booking.pastBookings.map((record) => (
                     <button
                       key={record.id || record._id}
@@ -458,7 +486,41 @@ const AppLayout = ({ children }) => {
                       {t('nav.noHistory')}
                     </p>
                   )}
-                </div>
+                </div> */}
+
+              <div className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
+  {booking.pastBookings && booking.pastBookings.length > 0 ? (
+    booking.pastBookings.map((record) => (
+      <button
+        key={record.id || record._id}
+        onClick={() => setSelectedHistory(record)}
+        className={`w-full rounded-2xl border px-4 py-3 text-left ${
+          activeHistory?.id === record.id
+            ? 'border-brand-saffron bg-brand-sand/60 text-brand-dusk'
+            : 'border-brand-dusk/10 text-brand-slate hover:bg-brand-smoke'
+        }`}
+      >
+        <p className="text-sm font-semibold">{record.temple}</p>
+        <p className="text-xs">{record.date}</p>
+        <p className="text-xs">{record.slot}</p>
+        <span className={`text-xs px-2 py-1 rounded-full ${
+          record.status === 'Completed' ? 'bg-green-100 text-green-700' :
+          record.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
+          'bg-gray-100 text-gray-700'
+        }`}>
+          {record.status}
+        </span>
+      </button>
+    ))
+  ) : (
+    <p className="rounded-2xl border border-dashed border-brand-dusk/15 p-4 text-center text-brand-slate/60">
+      {t('nav.noHistory', 'No previous bookings')}
+    </p>
+  )}
+</div>
+
+
+
                 {activeHistory && (
                   <div className="mt-4 rounded-2xl bg-brand-smoke p-4 text-brand-slate">
                     <p className="text-sm font-semibold text-brand-dusk">
@@ -470,13 +532,13 @@ const AppLayout = ({ children }) => {
                     <p className="text-sm">
                       {t('nav.visit', 'Visit')}: {activeHistory.date} · {activeHistory.slot}
                     </p>
-                    <p className="text-sm">
+                    {/* <p className="text-sm">
                       {t('nav.parkingLabel', 'Parking')}: {activeHistory.parking}
-                    </p>
+                    </p> */}
                     <p className="text-sm">
                       {/* {t('nav.devotee', 'Devotee')}: {activeHistory.visitors.name} (
                       {activeHistory.visitors.phone}) */}
-                      {t('nav.devotee', 'Devotee')}: {activeHistory?.devotes0?? '—'}
+                      {t('nav.devotee', 'Devotee')}: {activeHistory?.devotes?? '—'}
                        {/* ({activeHistory?.visitors?.phone ?? '—'}) */}
 
                     </p>
@@ -519,4 +581,3 @@ const AppLayout = ({ children }) => {
 
 
 export default AppLayout
-

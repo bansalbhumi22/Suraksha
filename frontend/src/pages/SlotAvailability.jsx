@@ -19,7 +19,20 @@ const SlotAvailability = () => {
     }
   }, [booking.temple, navigate])
 
+  // If user had selected a slot that became full (edge case), clear it
+  useEffect(() => {
+    if (!selectedSlot) return
+    const slot = slotTemplates.find((s) => s.label === selectedSlot)
+    if (slot) {
+      const availableSeats = slot.totalSeats - slot.bookedSeats
+      if (availableSeats <= 0) {
+        setSelectedSlot('')
+      }
+    }
+  }, [selectedSlot])
+
   const handleContinue = () => {
+    if (!selectedSlot) return
     const payload = {
       visitDate,
       visitSlot: selectedSlot,
@@ -61,16 +74,35 @@ const SlotAvailability = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {slotTemplates.map((slot) => {
           const isActive = selectedSlot === slot.label
+          const availableSeats = slot.totalSeats - slot.bookedSeats
+          const isDisabled = availableSeats <= 0
+
           return (
             <article
               key={slot.label}
-              onClick={() => setSelectedSlot(slot.label)}
-              onDoubleClick={handleContinue}
+              // only set selected if not disabled
+              onClick={() => {
+                if (!isDisabled) setSelectedSlot(slot.label)
+              }}
+              onDoubleClick={() => {
+                if (!isDisabled) handleContinue()
+              }}
+              // accessibility hints
+              role="button"
+              tabIndex={isDisabled ? -1 : 0}
+              onKeyDown={(e) => {
+                if (isDisabled) return
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setSelectedSlot(slot.label)
+                }
+              }}
               className={`flex cursor-pointer flex-col gap-3 rounded-3xl border p-6 transition hover:-translate-y-1 hover:shadow-xl ${
                 isActive
                   ? 'border-brand-saffron bg-white shadow-lg'
                   : 'border-brand-dusk/10 bg-white/70'
-              }`}
+              } ${isDisabled ? 'opacity-50 cursor-not-allowed pointer-events-auto' : ''}`}
+              aria-disabled={isDisabled}
             >
               <div className="flex items-center justify-between">
                 <p className="text-lg font-semibold text-brand-dusk">{slot.label}</p>
@@ -94,11 +126,13 @@ const SlotAvailability = () => {
                         : 'Waitlist'}
                 </span>
               </div>
-              
-               <p className="text-sm text-brand-dusk/60">
-    {slot.totalSeats - slot.bookedSeats}/{slot.totalSeats} seats available
-  </p>
 
+              {/* show seats left; if full show "Full" */}
+              <p className="text-sm text-brand-dusk/60">
+                {availableSeats > 0
+                  ? `${availableSeats}/${slot.totalSeats} seats available`
+                  : `Full (${slot.totalSeats}/${slot.totalSeats})`}
+              </p>
 
               <div className="h-2 rounded-full bg-brand-dusk/10">
                 <div
@@ -113,6 +147,11 @@ const SlotAvailability = () => {
                   }`}
                 />
               </div>
+
+              {/* optional extra hint for disabled slots */}
+              {isDisabled && (
+                <p className="mt-2 text-xs italic text-rose-600">This slot is full — please choose another.</p>
+              )}
             </article>
           )
         })}
@@ -162,6 +201,3 @@ const SlotAvailability = () => {
 }
 
 export default SlotAvailability
-
-
-

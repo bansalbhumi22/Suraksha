@@ -91,15 +91,15 @@ const buildInitialBooking = () => ({
   // parkingZone: '',
   // parkingTime: '',
   // parkingSlot: '',
-  visitors: {
-    name: '',
+  
+   // name: '',
     phone: '',
     email: '',
     total: 1,
     elders: 0,
     differentlyAbled: 0,
     notes: '',
-  },
+  
   isReturningVisitor: false,
   otpVerified: false,
   isAuthenticated: false,

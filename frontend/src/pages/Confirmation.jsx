@@ -19,12 +19,29 @@ const Confirmation = () => {
         temple: booking.temple?.name,
         date: booking.visitDate,
         slot: booking.visitSlot,
-        visitors: booking.total,
+        totalVisitors: booking.total,
         issuedAt: new Date().toISOString(),
       }),
     [booking],
   )
+  //  useEffect(() => {
+  //   const generateQR = async () => {
+  //     // small async pause → lets UI render first
+  //     await new Promise(res => setTimeout(res, 10))
 
+  //     const payload = {
+  //       temple: booking.temple?.name,
+  //       date: booking.visitDate,
+  //       slot: booking.visitSlot,
+  //       totalVisitors: booking.total,
+  //       issuedAt: new Date().toISOString()
+  //     }
+
+  //     setQrPayload(JSON.stringify(payload))
+  //   }
+
+  //   generateQR()
+  // }, [booking])
   const downloadQr = () => {
     const svg = document.getElementById('suraksha-qr')
     if (!svg) return
