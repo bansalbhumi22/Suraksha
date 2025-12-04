@@ -321,10 +321,42 @@ const getBookingHistory = AsyncHandler(async (req, res) => {
             new ApiResponse(200, [], "No booking history found")
         );
     }
+    // const currentBooking = bookings.find(b => b.status === "SCHEDULED") || null;
+    // const previousBookings = bookings.filter(b => b.status !== "SCHEDULED");
 
-    return res.status(200).json(
-        new ApiResponse(200, bookings, "Booking history fetched successfully")
-    );
+
+
+    const currentBooking = bookings[0] || null;
+const previousBookings = bookings.slice(1);
+
+
+    const transformBooking = (booking) => {
+        if (!booking) return null;
+        return {
+            templeName: booking.temple,
+            visitDate: booking.date,
+            visitSlot: booking.slot,
+            devotes: booking.visitors,
+            group: booking.visitors,
+            elders: booking.elders || 0,
+            differentlyAbled: booking.differentlyAbled || 0,
+            _id: booking._id,
+            id: booking.id,
+            status: booking.status
+        };
+    };
+
+     const responseData = {
+        currentBooking: transformBooking(currentBooking),
+        previousBookings: previousBookings.map(transformBooking)
+    };
+
+     return res.status(200).json({
+        statuscode: 200,
+        success: true,
+        message: "Booking history fetched successfully",
+        data: responseData  
+    });
 });
 
 

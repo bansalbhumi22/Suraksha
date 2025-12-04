@@ -4,6 +4,7 @@ import { useBooking } from '../context/BookingContext'
 import useTranslation from '../hooks/useTranslation'
 import axios from "axios"
 
+
 const VisitorDetails = () => {
   const navigate = useNavigate()
   const { booking, updateBooking } = useBooking()
@@ -18,12 +19,17 @@ const VisitorDetails = () => {
   )
   //const [notes, setNotes] = useState(booking.visitors.notes || '') 
   const [errorMsg, setErrorMsg] = useState("");
-
+ const [currentBooking,setCurrentBooking]= useState(null);
+    const [previousBookings, setPreviousBookings]=useState([]);
+  
   useEffect(() => {
     if (!booking.temple) {
       navigate('/')
     }
   }, [booking.temple, navigate])
+
+
+   
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -97,7 +103,9 @@ return;
     elders,
     differentlyAbled,
         //notes,
-      })
+      }
+    )
+    
     //   currentBooking: {
     //     id: `BK-${Math.floor(Math.random() * 10000)}`,
     //     temple: booking.temple.name,
@@ -117,7 +125,7 @@ return;
     // })
     
 
-
+    
     navigate('/confirmation')
 
   }

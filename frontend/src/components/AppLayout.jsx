@@ -21,8 +21,10 @@ const AppLayout = ({ children }) => {
   const [showCancelOtp, setShowCancelOtp] = useState(false)
   const [cancelOtp, setCancelOtp] = useState('')
   const [selectedHistory, setSelectedHistory] = useState(
-    booking.pastBookings[0] ?? null,
+    booking.pastBookings?.[0] ?? null,
   )
+  const [currentBooking,setCurrentBooking]= useState(null);
+    const [previousBookings, setPreviousBookings]=useState([]);
   
   const t = useTranslation()
 
@@ -39,7 +41,7 @@ const AppLayout = ({ children }) => {
   }, [language])
 
   useEffect(() => {
-    setSelectedHistory(booking.pastBookings[0] ?? null)
+    setSelectedHistory(booking.pastBookings?.[0] ?? null)
   }, [booking.pastBookings])
 
   const handleCancelRequest = () => {
@@ -99,6 +101,78 @@ const AppLayout = ({ children }) => {
 
     
   }
+ 
+   useEffect(()=>{
+
+  
+  console.log("1. isAuthenticated:", booking.isAuthenticated);
+  console.log("2. User details:", booking.visitors);
+    const fetchBookings= async()=>{
+      try{
+        const res= await axios.get(
+          "http://localhost:8000/api/v1/bookings/booking-history",{
+            withCredentials:true
+          })
+
+         
+           console.log("Backend response:", res.data);
+           console.log("Data type:", typeof res.data.data);
+      console.log("Is array?", Array.isArray(res.data.data));
+       let currentBookingData = null;
+      let previousBookingsData = [];
+         if (res.data.data) {
+          const dataField = res.data.data;
+          // if(Array.isArray(dataField)){
+          //   currentBookingData = dataField.find(b => b.status === "SCHEDULED") || null;
+          //    previousBookingsData = dataField.filter(b => b.status !== "SCHEDULED");
+          // }
+
+             if (dataField.currentBooking) {
+            currentBookingData = dataField.currentBooking;
+            previousBookingsData = dataField.previousBookings || [];
+          }
+         
+          else if (Array.isArray(dataField)) {
+            currentBookingData = dataField.find(b => b.status === "SCHEDULED") || null;
+            previousBookingsData = dataField.filter(b => b.status !== "SCHEDULED");
+          }
+
+
+        } 
+      // else if (res.data.currentBooking !== undefined) {
+      //   currentBookingData = res.data.currentBooking;
+      //   previousBookingsData = res.data.previousBookings || [];
+      // }
+
+       console.log("Current booking:", currentBookingData); 
+      console.log("Previous bookings:", previousBookingsData);
+
+
+       updateBooking({
+        currentBooking: currentBookingData,
+        pastBookings: Array.isArray(previousBookingsData) ? previousBookingsData : [],
+      });
+      //   setCurrentBooking(currentBookingData);
+      // setPreviousBookings(previousBookingsData);
+
+      
+      }catch(err){
+        console.log("Fetch error: ",err);
+       console.error("Error fetching bookings:", err.response?.data || err.message);
+      }
+    }
+
+    if(booking.isAuthenticated){
+      fetchBookings();
+    }
+    else{
+      console.log("Booking is not authenticated")
+    }
+    
+
+   },[booking.isAuthenticated]);
+
+  
 
   const templesVisited = booking.pastBookings.filter(b => b.status === 'Completed').length
 
@@ -272,7 +346,7 @@ const AppLayout = ({ children }) => {
                   {t('nav.close', 'Close')} ✕
                 </button>
               </div>
-              {booking.currentBooking ? (
+              {/* {booking.currentBooking ? (
                 <div className="mt-3 space-y-2 rounded-2xl border border-brand-dusk/10 bg-brand-sand/70 p-4">
                   <p className="text-base font-semibold text-brand-dusk">
                     {booking.currentBooking.temple}
@@ -331,7 +405,33 @@ const AppLayout = ({ children }) => {
                 <p className="mt-3 rounded-2xl border border-dashed border-brand-dusk/15 p-4 text-brand-slate/60">
                   {t('nav.noActiveBooking')}
                 </p>
-              )}
+              )} */}
+              {booking.currentBooking ? (
+  <div className="mt-3">
+    <div className="rounded-xl bg-orange-50 p-4 shadow-sm">
+      <h3 className="font-bold text-lg">{booking.currentBooking.templeName}</h3>
+
+      <p>{booking.currentBooking.visitDate} • {booking.currentBooking.visitSlot}</p>
+
+      <p className="text-sm text-gray-600">
+        Parking: {booking.currentBooking.parking}
+      </p>
+
+      <p className="text-sm text-gray-600">
+        Devotees: {booking.currentBooking.devotes} • Group: {booking.currentBooking.group} • Elders: {booking.currentBooking.elders} • Differently abled: {booking.currentBooking.differentlyAbled}
+      </p>
+
+      <button className="mt-3 rounded-full border px-4 py-2">
+        Cancel Booking
+      </button>
+    </div>
+  </div>
+) : (
+  <p className="mt-3 rounded-2xl border border-dashed border-brand-dusk/15 p-4 text-brand-slate/60">
+    {t('nav.noActiveBooking')}
+  </p>
+)}
+
 
               <div className="mt-5">
                 <p className="text-xs uppercase tracking-wide text-brand-slate/70">
@@ -340,7 +440,7 @@ const AppLayout = ({ children }) => {
                 <div className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
                   {booking.pastBookings.map((record) => (
                     <button
-                      key={record.id}
+                      key={record.id || record._id}
                       onClick={() => setSelectedHistory(record)}
                       className={`w-full rounded-2xl border px-4 py-3 text-left ${
                         activeHistory?.id === record.id
@@ -374,14 +474,27 @@ const AppLayout = ({ children }) => {
                       {t('nav.parkingLabel', 'Parking')}: {activeHistory.parking}
                     </p>
                     <p className="text-sm">
-                      {t('nav.devotee', 'Devotee')}: {activeHistory.visitors.name} (
-                      {activeHistory.visitors.phone})
+                      {/* {t('nav.devotee', 'Devotee')}: {activeHistory.visitors.name} (
+                      {activeHistory.visitors.phone}) */}
+                      {t('nav.devotee', 'Devotee')}: {activeHistory?.devotes0?? '—'}
+                       {/* ({activeHistory?.visitors?.phone ?? '—'}) */}
+
                     </p>
                     <p className="text-sm">
+  {t('nav.devotee', 'Devotee')}: {activeHistory?.devotes ?? '—'}
+</p>
+
+                    {/* <p className="text-sm">
                       {t('nav.groupSummary', 'Group')}: {activeHistory.visitors.total} · Elders{' '}
                       {activeHistory.visitors.elders} · Differently abled{' '}
                       {activeHistory.visitors.differentlyAbled}
-                    </p>
+                    </p> */}
+                    <p className="text-sm">
+  {t('nav.groupSummary', 'Group')}: {activeHistory?.group ?? '—'} · Elders{' '}
+  {activeHistory?.elders ?? '—'} · Differently abled{' '}
+  {activeHistory?.differentlyAbled ?? '—'}
+</p>
+
                     <p className="text-xs uppercase tracking-wide text-brand-slate/50">
                       {t('nav.status', 'Status')}: {activeHistory.status ?? 'Completed'}
                     </p>
@@ -402,6 +515,8 @@ const AppLayout = ({ children }) => {
     </div>
   )
 }
+
+
 
 export default AppLayout
 

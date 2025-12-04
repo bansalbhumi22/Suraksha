@@ -1,5 +1,5 @@
 import mongoose, {Schema} from 'mongoose'
-import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2'
+//import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2'
 const bookingSchema=new Schema ({
             date:{
                 type:String,
@@ -51,13 +51,20 @@ const bookingSchema=new Schema ({
                 type: Schema.Types.ObjectId,
                 ref: "User",
                 required: true
+            },
+            status:{
+                type:String,
+                default:"SCHEDULED"
             }
 
             
+},
+{
+    timestamps:true
 }
 )
 
-bookingSchema.plugin(mongooseAggregatePaginate)
+//bookingSchema.plugin(mongooseAggregatePaginate)
 
 export const Booking= mongoose.model("Booking",bookingSchema)
 
